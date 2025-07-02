@@ -209,20 +209,13 @@
         const senha = inputs.map((input) => input.value).join("");
 
         if (senha === "0000") {
-          // desbloqueia áudio sem tocar som real
-          audio
-            .play()
-            .then(() => {
-              audio.pause();
-              audio.currentTime = 0;
-            })
-            .catch(() => {});
+          // Não tocar som aqui para evitar duplo play
 
           trocarTela("telaSenha", "telaProcessando");
 
           setTimeout(() => {
             trocarTela("telaProcessando", "telaConcluido");
-            audio.play(); // toca só aqui, junto com pagamento aprovado
+            audio.play();
           }, 3000);
         } else {
           document.getElementById("erroSenha").style.display = "block";
