@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
     />
     <title>Pagamento</title>
     <style>
@@ -16,77 +16,91 @@
         box-sizing: border-box;
       }
 
-      html,
       body {
-        height: 100%;
+        background-color: #ffffff;
         font-family: "Inter", sans-serif;
-        background-color: #0a0a0a;
-        color: #ffffff;
+        color: #111;
         display: flex;
         justify-content: center;
         align-items: center;
+        height: 100vh;
+        padding: 20px;
       }
 
       .container {
+        max-width: 360px;
         width: 100%;
-        max-width: 400px;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+        text-align: center;
       }
 
       h1 {
         font-size: 1.8rem;
-        text-align: center;
-        margin-bottom: 10px;
-        color: #00e676;
+        margin-bottom: 20px;
+        color: #00c864;
       }
 
-      input[type="password"] {
-        width: 100%;
-        padding: 18px;
+      .pin-inputs {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .pin-inputs input {
+        width: 60px;
+        height: 60px;
         font-size: 2rem;
         text-align: center;
-        letter-spacing: 12px;
-        border: 1px solid #333;
+        border: 1px solid #ccc;
         border-radius: 12px;
-        background-color: #161616;
-        color: #ffffff;
+        background-color: #f0f0f0;
       }
 
       button {
         width: 100%;
-        padding: 16px;
-        font-size: 1.2rem;
+        padding: 14px;
+        font-size: 1rem;
         font-weight: bold;
         border: none;
         border-radius: 12px;
-        background-color: #00e676;
-        color: #000;
+        background-color: #00c864;
+        color: #fff;
         cursor: pointer;
-        transition: background 0.2s;
       }
 
-      button:hover {
-        background-color: #00c864;
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #eee;
+        border-top: 6px solid #00c864;
+        border-radius: 50%;
+        margin: 30px auto;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       .success {
         font-size: 2rem;
-        font-weight: bold;
-        color: #00e676;
-        text-align: center;
-        animation: fadeIn 0.6s ease forwards;
+        font-weight: 600;
+        color: #00c864;
+        margin-top: 30px;
+        animation: fadeIn 0.5s ease-in-out forwards;
         opacity: 0;
       }
 
-      .valor {
+      .amount {
         font-size: 2.5rem;
-        text-align: center;
-        color: #ffffff;
-        animation: fadeIn 0.8s ease forwards;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #000;
+        animation: fadeIn 0.8s ease-in-out forwards;
         opacity: 0;
+        animation-delay: 0.5s;
       }
 
       @keyframes fadeIn {
@@ -94,57 +108,113 @@
           opacity: 1;
         }
       }
+
+      .status {
+        font-size: 1.2rem;
+        color: #555;
+      }
+
+      .error {
+        margin-top: 10px;
+        color: #d32f2f;
+        font-weight: bold;
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <div class="container" id="loginBox">
-      <h1>Autenticação</h1>
-      <input
-        type="password"
-        id="senha"
-        maxlength="4"
-        placeholder="••••"
-        inputmode="numeric"
-        autocomplete="off"
-        autofocus
-      />
+    <!-- Tela 1: senha -->
+    <div class="container" id="telaSenha">
+      <h1>Digite a senha</h1>
+      <div class="pin-inputs">
+        <input
+          type="password"
+          maxlength="1"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          id="d1"
+        />
+        <input
+          type="password"
+          maxlength="1"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          id="d2"
+        />
+        <input
+          type="password"
+          maxlength="1"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          id="d3"
+        />
+        <input
+          type="password"
+          maxlength="1"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          id="d4"
+        />
+      </div>
       <button onclick="verificarSenha()">Confirmar</button>
+      <div class="error" id="erroSenha">
+        ❌ Senha incorreta. Tente novamente.
+      </div>
     </div>
 
-    <div class="container" id="pagamentoBox" style="display: none">
+    <!-- Tela 2: processando -->
+    <div class="container" id="telaProcessando" style="display: none">
+      <div class="spinner"></div>
+      <div class="status">Processando pagamento...</div>
+    </div>
+
+    <!-- Tela 3: concluído -->
+    <div class="container" id="telaConcluido" style="display: none">
       <div class="success">✅ Pagamento aprovado</div>
-      <div class="valor">R$ 159,90</div>
+      <div class="amount">R$ 159,90</div>
     </div>
 
-    <!-- Som local ou remoto -->
     <audio id="somConfirmacao" preload="auto">
       <source src="som-pagamento.mp3" type="audio/mpeg" />
-      Seu navegador não suporta áudio.
     </audio>
 
     <script>
-      function verificarSenha() {
-        const senha = document.getElementById("senha").value;
-        if (senha === "0000") {
-          document.getElementById("loginBox").style.display = "none";
-          document.getElementById("pagamentoBox").style.display = "flex";
-          const audio = document.getElementById("somConfirmacao");
-          audio.currentTime = 0;
-          audio.play();
-        } else {
-          alert("Senha incorreta");
-          document.getElementById("senha").value = "";
-          document.getElementById("senha").focus();
-        }
-      }
+      const inputs = [...document.querySelectorAll(".pin-inputs input")];
 
-      document
-        .getElementById("senha")
-        .addEventListener("keyup", function (event) {
-          if (event.key === "Enter") {
-            verificarSenha();
+      // Troca automática entre campos
+      inputs.forEach((input, index) => {
+        input.addEventListener("input", () => {
+          if (input.value.length === 1 && index < inputs.length - 1) {
+            inputs[index + 1].focus();
           }
         });
+
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Backspace" && !input.value && index > 0) {
+            inputs[index - 1].focus();
+          }
+        });
+      });
+
+      function verificarSenha() {
+        const senha = inputs.map((input) => input.value).join("");
+        if (senha === "0000") {
+          document.getElementById("telaSenha").style.display = "none";
+          document.getElementById("telaProcessando").style.display = "block";
+
+          setTimeout(() => {
+            document.getElementById("telaProcessando").style.display = "none";
+            document.getElementById("telaConcluido").style.display = "block";
+            const audio = document.getElementById("somConfirmacao");
+            audio.currentTime = 0;
+            audio.play();
+          }, 3000);
+        } else {
+          document.getElementById("erroSenha").style.display = "block";
+          inputs.forEach((input) => (input.value = ""));
+          inputs[0].focus();
+        }
+      }
     </script>
   </body>
 </html>
