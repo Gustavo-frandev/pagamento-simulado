@@ -2,75 +2,105 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pagamento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pagamento Futurista</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap");
+
       body {
-        background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-        font-family: "Segoe UI", sans-serif;
-        color: white;
+        background: radial-gradient(circle at center, #001100, #000000);
+        font-family: "Orbitron", "Segoe UI", sans-serif;
+        color: #00ff99;
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
         margin: 0;
         overflow: hidden;
+        user-select: none;
       }
 
       .container {
-        background-color: #111;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 0 30px #00ff88;
+        background: rgba(0, 255, 153, 0.1);
+        border: 2px solid #00ff99;
+        border-radius: 25px;
+        padding: 50px 40px;
+        width: 350px;
         text-align: center;
-        max-width: 320px;
+        box-shadow: 0 0 40px #00ff99, inset 0 0 20px #00ff99;
+        backdrop-filter: blur(10px);
+        position: relative;
       }
 
       h1 {
-        margin-bottom: 20px;
-        color: #00ff88;
+        font-size: 2.8rem;
+        margin-bottom: 30px;
+        letter-spacing: 4px;
+        text-shadow: 0 0 5px #00ff99, 0 0 15px #00ff99, 0 0 30px #00ff99;
       }
 
       input[type="password"] {
-        padding: 15px;
-        font-size: 24px;
-        text-align: center;
-        letter-spacing: 10px;
-        border-radius: 10px;
-        border: none;
-        outline: none;
-        margin-bottom: 20px;
         width: 100%;
+        padding: 20px 0;
+        font-size: 3rem;
+        text-align: center;
+        color: #00ff99;
+        background: transparent;
+        border: 2px solid #00ff99;
+        border-radius: 15px;
+        outline: none;
+        letter-spacing: 18px;
+        transition: 0.3s;
+        box-shadow: 0 0 15px #00ff99;
+      }
+      input[type="password"]:focus {
+        box-shadow: 0 0 30px #00ff99;
+        border-color: #00ffaa;
       }
 
       button {
-        background-color: #00ff88;
-        color: black;
-        padding: 12px 24px;
-        font-size: 18px;
+        margin-top: 30px;
+        padding: 18px 0;
+        width: 100%;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #000;
+        background: #00ff99;
         border: none;
-        border-radius: 10px;
+        border-radius: 20px;
         cursor: pointer;
-        transition: 0.3s;
+        box-shadow: 0 0 15px #00ff99, inset 0 0 10px #00cc77;
+        transition: background-color 0.3s ease;
       }
-
       button:hover {
-        background-color: #00cc66;
+        background-color: #00cc77;
+        box-shadow: 0 0 30px #00cc77, inset 0 0 15px #009955;
       }
 
       .success {
-        font-size: 28px;
-        color: #00ff88;
-        animation: glow 1s ease-in-out infinite alternate;
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: #00ff99;
+        animation: neonPulse 1.5s ease-in-out infinite alternate;
+        text-shadow: 0 0 10px #00ff99, 0 0 30px #00ff99, 0 0 50px #00ff99;
+        user-select: none;
+        margin-bottom: 20px;
       }
 
-      @keyframes glow {
-        from {
-          text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88;
+      .valor {
+        font-size: 4rem;
+        font-weight: 900;
+        color: #00ffaa;
+        margin-bottom: 30px;
+        text-shadow: 0 0 10px #00ffaa, 0 0 25px #00ffaa, 0 0 40px #00ffaa;
+      }
+
+      @keyframes neonPulse {
+        0% {
+          text-shadow: 0 0 10px #00ff99, 0 0 30px #00ff99, 0 0 50px #00ff99;
         }
-        to {
-          text-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88;
+        100% {
+          text-shadow: 0 0 20px #00ff99, 0 0 60px #00ff99, 0 0 100px #00ff99;
         }
       }
     </style>
@@ -82,26 +112,28 @@
         type="password"
         id="senha"
         maxlength="4"
-        placeholder="****"
+        placeholder="••••"
         inputmode="numeric"
+        autocomplete="off"
+        autofocus
       />
-      <br />
       <button onclick="verificarSenha()">Confirmar</button>
     </div>
 
     <div class="container" id="pagamentoBox" style="display: none">
       <h1 class="success">✅ Pagamento Concluído</h1>
-      <p>R$ 9,50</p>
+      <p class="valor">R$ 159,90</p>
     </div>
 
     <audio id="somConfirmacao" preload="auto">
       <source
-        src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
-        type="audio/ogg"
-      />
-      <source
-        src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3"
+        src="https://cdn.freesound.org/previews/269/269130_5121236-lq.mp3"
         type="audio/mpeg"
+      />
+      <!-- Fallback caso mp3 não funcione -->
+      <source
+        src="https://cdn.freesound.org/previews/269/269130_5121236-lq.ogg"
+        type="audio/ogg"
       />
     </audio>
 
@@ -111,9 +143,13 @@
         if (senha === "0000") {
           document.getElementById("loginBox").style.display = "none";
           document.getElementById("pagamentoBox").style.display = "block";
-          document.getElementById("somConfirmacao").play();
+          const audio = document.getElementById("somConfirmacao");
+          audio.currentTime = 0;
+          audio.play();
         } else {
           alert("Senha incorreta");
+          document.getElementById("senha").value = "";
+          document.getElementById("senha").focus();
         }
       }
 
