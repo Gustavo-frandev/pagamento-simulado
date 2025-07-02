@@ -3,44 +3,128 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pagamento Simulado</title>
+    <title>Pagamento</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        background-color: #f0fff0;
-        color: #333;
-        text-align: center;
-        padding: 50px;
-      }
-      .container {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        display: inline-block;
-      }
-      .valor {
-        font-size: 2em;
-        color: #28a745;
-        margin: 20px 0;
-      }
-      .confirmado {
-        background-color: #28a745;
+        background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+        font-family: "Segoe UI", sans-serif;
         color: white;
-        padding: 12px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .container {
+        background-color: #111;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px #00ff88;
+        text-align: center;
+        max-width: 320px;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #00ff88;
+      }
+
+      input[type="password"] {
+        padding: 15px;
+        font-size: 24px;
+        text-align: center;
+        letter-spacing: 10px;
+        border-radius: 10px;
         border: none;
-        font-size: 1em;
-        border-radius: 8px;
-        cursor: default;
+        outline: none;
+        margin-bottom: 20px;
+        width: 100%;
+      }
+
+      button {
+        background-color: #00ff88;
+        color: black;
+        padding: 12px 24px;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background-color: #00cc66;
+      }
+
+      .success {
+        font-size: 28px;
+        color: #00ff88;
+        animation: glow 1s ease-in-out infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88;
+        }
+        to {
+          text-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Pagamento Simulado</h1>
-      <p class="valor">R$ 9,50</p>
-      <button class="confirmado">Pagamento Confirmado</button>
-      <p>Obrigado por utilizar nosso sistema!</p>
+    <div class="container" id="loginBox">
+      <h1>Autenticação</h1>
+      <input
+        type="password"
+        id="senha"
+        maxlength="4"
+        placeholder="****"
+        inputmode="numeric"
+      />
+      <br />
+      <button onclick="verificarSenha()">Confirmar</button>
     </div>
+
+    <div class="container" id="pagamentoBox" style="display: none">
+      <h1 class="success">✅ Pagamento Concluído</h1>
+      <p>R$ 9,50</p>
+    </div>
+
+    <audio id="somConfirmacao" preload="auto">
+      <source
+        src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+        type="audio/ogg"
+      />
+      <source
+        src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+
+    <script>
+      function verificarSenha() {
+        const senha = document.getElementById("senha").value;
+        if (senha === "0000") {
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("pagamentoBox").style.display = "block";
+          document.getElementById("somConfirmacao").play();
+        } else {
+          alert("Senha incorreta");
+        }
+      }
+
+      // Permitir "Enter" como atalho
+      document
+        .getElementById("senha")
+        .addEventListener("keyup", function (event) {
+          if (event.key === "Enter") {
+            verificarSenha();
+          }
+        });
+    </script>
   </body>
 </html>
