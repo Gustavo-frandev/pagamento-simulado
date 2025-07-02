@@ -16,21 +16,31 @@
         box-sizing: border-box;
       }
 
+      html,
       body {
-        background-color: #ffffff;
+        width: 100%;
+        height: 100%;
         font-family: "Inter", sans-serif;
+        background-color: #ffffff;
         color: #111;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        padding: 20px;
       }
 
       .container {
-        max-width: 360px;
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 100vh;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
         text-align: center;
+      }
+
+      .container.active {
+        display: flex;
       }
 
       h1 {
@@ -41,7 +51,7 @@
 
       .pin-inputs {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         gap: 10px;
         margin-bottom: 20px;
       }
@@ -58,6 +68,7 @@
 
       button {
         width: 100%;
+        max-width: 300px;
         padding: 14px;
         font-size: 1rem;
         font-weight: bold;
@@ -74,7 +85,7 @@
         border: 6px solid #eee;
         border-top: 6px solid #00c864;
         border-radius: 50%;
-        margin: 30px auto;
+        margin-bottom: 20px;
         animation: spin 1s linear infinite;
       }
 
@@ -89,11 +100,9 @@
         color: #555;
       }
 
-      .success-container {
-        padding: 30px 20px;
+      /* Pagamento Aprovado - Tela inteira */
+      #telaConcluido {
         background-color: #f5fff9;
-        border-radius: 16px;
-        box-shadow: 0 0 20px rgba(0, 200, 100, 0.2);
         animation: fadeInZoom 0.8s ease forwards;
       }
 
@@ -109,7 +118,7 @@
       }
 
       .success-icon {
-        font-size: 3rem;
+        font-size: 4rem;
         color: #00c864;
         animation: pop 0.3s ease;
       }
@@ -124,16 +133,16 @@
       }
 
       .success-message {
-        font-size: 1.6rem;
+        font-size: 2rem;
         font-weight: 600;
-        margin-top: 10px;
+        margin-top: 20px;
         color: #00a85a;
       }
 
       .amount {
-        font-size: 2.2rem;
+        font-size: 2.8rem;
         font-weight: bold;
-        margin-top: 12px;
+        margin-top: 16px;
         color: #111;
       }
 
@@ -147,7 +156,7 @@
   </head>
   <body>
     <!-- Tela 1: senha -->
-    <div class="container" id="telaSenha">
+    <div class="container active" id="telaSenha">
       <h1>Digite a senha</h1>
       <div class="pin-inputs">
         <input type="password" maxlength="1" inputmode="numeric" id="d1" />
@@ -162,18 +171,16 @@
     </div>
 
     <!-- Tela 2: processando -->
-    <div class="container" id="telaProcessando" style="display: none">
+    <div class="container" id="telaProcessando">
       <div class="spinner"></div>
       <div class="status">Processando pagamento...</div>
     </div>
 
-    <!-- Tela 3: concluído -->
-    <div class="container" id="telaConcluido" style="display: none">
-      <div class="success-container">
-        <div class="success-icon">✅</div>
-        <div class="success-message">Pagamento aprovado</div>
-        <div class="amount">R$ 159,90</div>
-      </div>
+    <!-- Tela 3: concluído (tela inteira) -->
+    <div class="container" id="telaConcluido">
+      <div class="success-icon">✅</div>
+      <div class="success-message">Pagamento aprovado</div>
+      <div class="amount">R$ 159,90</div>
     </div>
 
     <!-- Áudio -->
@@ -183,6 +190,7 @@
 
     <script>
       const inputs = [...document.querySelectorAll(".pin-inputs input")];
+      const audio = document.getElementById("somConfirmacao");
 
       inputs.forEach((input, index) => {
         input.addEventListener("input", () => {
@@ -199,15 +207,20 @@
 
       function verificarSenha() {
         const senha = inputs.map((input) => input.value).join("");
+
         if (senha === "0000") {
-          document.getElementById("telaSenha").style.display = "none";
-          document.getElementById("telaProcessando").style.display = "block";
+          audio
+            .play()
+            .then(() => {
+              audio.pause();
+              audio.currentTime = 0;
+            })
+            .catch(() => {});
+
+          trocarTela("telaSenha", "telaProcessando");
 
           setTimeout(() => {
-            document.getElementById("telaProcessando").style.display = "none";
-            document.getElementById("telaConcluido").style.display = "block";
-            const audio = document.getElementById("somConfirmacao");
-            audio.currentTime = 0;
+            trocarTela("telaProcessando", "telaConcluido");
             audio.play();
           }, 3000);
         } else {
@@ -215,6 +228,11 @@
           inputs.forEach((input) => (input.value = ""));
           inputs[0].focus();
         }
+      }
+
+      function trocarTela(de, para) {
+        document.getElementById(de).classList.remove("active");
+        document.getElementById(para).classList.add("active");
       }
     </script>
   </body>
