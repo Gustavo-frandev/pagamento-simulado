@@ -84,34 +84,57 @@
         }
       }
 
-      .success {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #00c864;
-        margin-top: 30px;
-        animation: fadeIn 0.5s ease-in-out forwards;
-        opacity: 0;
-      }
-
-      .amount {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-top: 10px;
-        color: #000;
-        animation: fadeIn 0.8s ease-in-out forwards;
-        opacity: 0;
-        animation-delay: 0.5s;
-      }
-
-      @keyframes fadeIn {
-        to {
-          opacity: 1;
-        }
-      }
-
       .status {
         font-size: 1.2rem;
         color: #555;
+      }
+
+      .success-container {
+        padding: 30px 20px;
+        background-color: #f5fff9;
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(0, 200, 100, 0.2);
+        animation: fadeInZoom 0.8s ease forwards;
+      }
+
+      @keyframes fadeInZoom {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .success-icon {
+        font-size: 3rem;
+        color: #00c864;
+        animation: pop 0.3s ease;
+      }
+
+      @keyframes pop {
+        0% {
+          transform: scale(0.5);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .success-message {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-top: 10px;
+        color: #00a85a;
+      }
+
+      .amount {
+        font-size: 2.2rem;
+        font-weight: bold;
+        margin-top: 12px;
+        color: #111;
       }
 
       .error {
@@ -127,34 +150,10 @@
     <div class="container" id="telaSenha">
       <h1>Digite a senha</h1>
       <div class="pin-inputs">
-        <input
-          type="password"
-          maxlength="1"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          id="d1"
-        />
-        <input
-          type="password"
-          maxlength="1"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          id="d2"
-        />
-        <input
-          type="password"
-          maxlength="1"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          id="d3"
-        />
-        <input
-          type="password"
-          maxlength="1"
-          inputmode="numeric"
-          pattern="[0-9]*"
-          id="d4"
-        />
+        <input type="password" maxlength="1" inputmode="numeric" id="d1" />
+        <input type="password" maxlength="1" inputmode="numeric" id="d2" />
+        <input type="password" maxlength="1" inputmode="numeric" id="d3" />
+        <input type="password" maxlength="1" inputmode="numeric" id="d4" />
       </div>
       <button onclick="verificarSenha()">Confirmar</button>
       <div class="error" id="erroSenha">
@@ -170,10 +169,14 @@
 
     <!-- Tela 3: concluído -->
     <div class="container" id="telaConcluido" style="display: none">
-      <div class="success">✅ Pagamento aprovado</div>
-      <div class="amount">R$ 159,90</div>
+      <div class="success-container">
+        <div class="success-icon">✅</div>
+        <div class="success-message">Pagamento aprovado</div>
+        <div class="amount">R$ 159,90</div>
+      </div>
     </div>
 
+    <!-- Áudio -->
     <audio id="somConfirmacao" preload="auto">
       <source src="som-pagamento.mp3" type="audio/mpeg" />
     </audio>
@@ -181,14 +184,12 @@
     <script>
       const inputs = [...document.querySelectorAll(".pin-inputs input")];
 
-      // Troca automática entre campos
       inputs.forEach((input, index) => {
         input.addEventListener("input", () => {
           if (input.value.length === 1 && index < inputs.length - 1) {
             inputs[index + 1].focus();
           }
         });
-
         input.addEventListener("keydown", (e) => {
           if (e.key === "Backspace" && !input.value && index > 0) {
             inputs[index - 1].focus();
