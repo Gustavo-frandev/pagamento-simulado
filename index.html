@@ -79,27 +79,6 @@
         cursor: pointer;
       }
 
-      .spinner {
-        width: 60px;
-        height: 60px;
-        border: 6px solid #eee;
-        border-top: 6px solid #00c864;
-        border-radius: 50%;
-        margin-bottom: 20px;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .status {
-        font-size: 1.2rem;
-        color: #555;
-      }
-
       /* Pagamento Aprovado - Tela inteira */
       #telaConcluido {
         background-color: #f5fff9;
@@ -170,13 +149,7 @@
       </div>
     </div>
 
-    <!-- Tela 2: processando -->
-    <div class="container" id="telaProcessando">
-      <div class="spinner"></div>
-      <div class="status">Processando pagamento...</div>
-    </div>
-
-    <!-- Tela 3: concluído (tela inteira) -->
+    <!-- Tela 2: concluído (tela inteira) -->
     <div class="container" id="telaConcluido">
       <div class="success-icon">✅</div>
       <div class="success-message">Pagamento aprovado</div>
@@ -192,6 +165,7 @@
       const inputs = [...document.querySelectorAll(".pin-inputs input")];
       const audio = document.getElementById("somConfirmacao");
 
+      // Muda foco automático ao digitar e permite backspace voltar
       inputs.forEach((input, index) => {
         input.addEventListener("input", () => {
           if (input.value.length === 1 && index < inputs.length - 1) {
@@ -209,24 +183,14 @@
         const senha = inputs.map((input) => input.value).join("");
 
         if (senha === "0000") {
-          // Não tocar som aqui para evitar duplo play
-
-          trocarTela("telaSenha", "telaProcessando");
-
-          setTimeout(() => {
-            trocarTela("telaProcessando", "telaConcluido");
-            audio.play();
-          }, 3000);
+          document.getElementById("telaSenha").classList.remove("active");
+          document.getElementById("telaConcluido").classList.add("active");
+          audio.play();
         } else {
           document.getElementById("erroSenha").style.display = "block";
           inputs.forEach((input) => (input.value = ""));
           inputs[0].focus();
         }
-      }
-
-      function trocarTela(de, para) {
-        document.getElementById(de).classList.remove("active");
-        document.getElementById(para).classList.add("active");
       }
     </script>
   </body>
